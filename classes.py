@@ -12,13 +12,6 @@ class Car(games.Sprite):
                                   x=x,
                                   y=y)
         self.game = game
-        self.score = games.Text(value=0,
-                                size=40,
-                                right=games.screen.width - 10,
-                                color=color.white,
-                                top=5
-                                )
-        games.screen.add(self.score)
 
     def update(self):
 
@@ -49,29 +42,38 @@ class Car(games.Sprite):
         for obstacle in self.overlapping_sprites:
             obstacle.collision()
             self.end_game()
+            self.stop()
 
-    def end_game(self):
+    @staticmethod
+    def end_game():
         end_msg = games.Message(value='Вы проиграли!',
                                 size=90,
                                 color=color.red,
                                 x=games.screen.width / 2,
                                 y=games.screen.height / 2,
-                                lifetime=5 * games.screen.fps,
+                                lifetime=3 * games.screen.fps,
                                 after_death=games.screen.quit
                                 )
         games.screen.add(end_msg)
 
 
 class Arrangement(games.Sprite):
-    image = games.load_image('img/barrier.png')
+    image = games.load_image('img/car8.png')
 
-    def __init__(self, y=-200, speed=4, odds_change=200):
+    def __init__(self, y=-200, speed=3, odds_change=200):
         super(Arrangement, self).__init__(image=Arrangement.image,
                                           x=games.screen.width / 2,
                                           y=y,
                                           dx=speed)
         self.odds_change = odds_change
         self.time_til_drop = 0
+        self.score = games.Text(value=0,
+                                size=40,
+                                right=games.screen.width - 15,
+                                color=color.white,
+                                top=5
+                                )
+        games.screen.add(self.score)
 
     def update(self):
         if self.left < 0 or self.right > games.screen.width:
@@ -84,27 +86,24 @@ class Arrangement(games.Sprite):
         if self.time_til_drop > 0:
             self.time_til_drop -= 1
         else:
-            new_obstacle = Obstacles(x=self.x)
+            new_obstacle = Obstacles(x=self.x, rand1=random.randint(3, 8))
             games.screen.add(new_obstacle)
-
-            self.time_til_drop = random.randint(95, 100)
+            self.score.value += 1
+            self.time_til_drop = random.randint(70, 100)
 
 
 class Obstacles(games.Sprite):
 
     rand = random.choice(['img/car3.png', 'img/car4.png', 'img/car5.png', 'img/car6.png', 'img/car7.png',
-                         'img/barrier.png'])
+                         'img/car8.png'])
     image = games.load_image(rand)
     speed = 3
 
-    def __init__(self, x, y=0):
-        super(Obstacles, self).__init__(image=Obstacles.image,
-                                     x=x,
-                                     y=y,
-                                     dy=Obstacles.speed)
-
-    # def update(self):
-
+    def __init__(self, x, rand1, y=-100):
+        super(Obstacles, self).__init__(image=games.load_image('img/car'+str(rand1)+'.png'),
+                                        x=x,
+                                        y=y,
+                                        dy=Obstacles.speed)
 
     def collision(self):
         self.destroy()
@@ -117,7 +116,8 @@ class Game:
                        y=570)
         games.screen.add(self.car)
 
-    def play(self):
+    @staticmethod
+    def play():
         road_image = games.load_image('img/background.jpg', transparent=False)
         games.screen.background = road_image
         the_arrangement = Arrangement()
