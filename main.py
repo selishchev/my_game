@@ -1,8 +1,8 @@
-from classes import *
+from game import *
 
 
 def main():
-    play_game = Game()
+    play_game = Game(rand=random.randint(1, 4))
     play_game.play()
 
 
