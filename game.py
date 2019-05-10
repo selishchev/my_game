@@ -41,6 +41,8 @@ class Car(games.Sprite):
     def check_collision(self):
         for obstacle in self.overlapping_sprites:
             obstacle.collision()
+            the_explosion = Explosion(self.x, self.y)
+            games.screen.add(the_explosion)
             self.end_game()
             self.stop()
 
@@ -55,6 +57,19 @@ class Car(games.Sprite):
                                 after_death=games.screen.quit
                                 )
         games.screen.add(end_msg)
+
+
+class Explosion(games.Animation):
+
+    images = []
+
+    def __init__(self, x, y):
+        for i in range(1, 46):
+            Explosion.images.append('animation/explosion' + str(i) + '.png')
+        super(Explosion, self).__init__(images=Explosion.images,
+                                        x=x,
+                                        y=y,
+                                        repeat_interval=5, n_repeats=1)
 
 
 class Arrangement(games.Sprite):
