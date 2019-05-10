@@ -43,6 +43,7 @@ class Car(games.Sprite):
             obstacle.collision()
             the_explosion = Explosion(self.x, self.y)
             games.screen.add(the_explosion)
+            self.destroy()
             self.end_game()
             self.stop()
 
